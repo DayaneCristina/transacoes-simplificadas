@@ -1,0 +1,54 @@
+name: PHPUnit Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    name: Run PHPUnit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: xdebug
+          tools: composer:v2
+          extensions: rdkafka
+
+      - name: Setup environment variables
+        run: |
+          echo "APP_ENV=testing" >> $GITHUB_ENV
+          echo "APP_MAINTENANCE_DRIVER=file" >> $GITHUB_ENV
+          echo "BCRYPT_ROUNDS=4" >> $GITHUB_ENV
+          echo "CACHE_STORE=array" >> $GITHUB_ENV
+          echo "DB_CONNECTION=sqlite" >> $GITHUB_ENV
+          echo "DB_DATABASE=:memory:" >> $GITHUB_ENV
+          echo "MAIL_MAILER=array" >> $GITHUB_ENV
+          echo "PULSE_ENABLED=false" >> $GITHUB_ENV
+          echo "QUEUE_CONNECTION=sync" >> $GITHUB_ENV
+          echo "SESSION_DRIVER=array" >> $GITHUB_ENV
+          echo "TELESCOPE_ENABLED=false" >> $GITHUB_ENV
+          echo "AUTHORIZER_BASE_URL=http://localhost" >> $GITHUB_ENV
+          echo "NOTIFIER_BASE_URL=http://localhost" >> $GITHUB_ENV
+
+      - name: Check PHP configuration
+        run: |
+          php --ini
+          php -m
+
+      - name: Install dependencies (with optional extension ignore)
+        run: |
+          # Try normal install first
+          composer install --prefer-dist --no-progress || \
+          composer install --prefer-dist --no-progress --ignore-platform-req=ext-rdkafka
+
+      - name: Run PHPUnit tests
+        run: vendor/bin/phpunit
