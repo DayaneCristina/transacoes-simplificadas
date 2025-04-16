@@ -117,10 +117,10 @@ curl -X 'POST' \
 }'
 ```
 
-[POST] /api/accounts/transfer
+[POST] /api/transfer
 ```
 curl -X 'POST' \
-  'http://localhost:8080/api/accounts/transfer' \
+  'http://localhost:8080/api/transfer' \
   -H 'accept: */*' \
   -H 'user-id: 1' \
   -H 'Content-Type: application/json' \
@@ -145,7 +145,10 @@ Além disso, utilizar um sistema que funcione baseado em eventos e de forma ASYN
 Outro ponto interessante seria a utilização de um padrão CQRS, ou seja, separar as operações de leitura das operações de escrita.
 
 ### Banco de Dados
-Embora o PostgreSql seja um excelente banco de dados relacional para um projeto que visa ser escalado, seria interessante a utilização de um banco de dados NoSQL (DybanoDB ou MongoDB) para auxiliar em fluxos de Logs ou que não sejam transacionais.
+Embora o PostgreSql seja um excelente banco de dados relacional para um projeto que visa ser escalado, seria interessante a utilização de um banco de dados NoSQL (DynanoDB ou MongoDB) para auxiliar em fluxos de Logs ou que não sejam transacionais.
 
 ### Cache
 A utilização de cache para ações comuns que não se alteram tanto (como por exemplo o  e-mail de um usuário para disparo de notificação) pode auxiliar na performance também desonerando a base de dados para consultas.
+
+### Observabilidade
+Para um ambiente produtivo a integração com um sistema de observabilidade poderia auxiliar na identificação de problemas, como por exemplo no fluxo de disparo de notificação que em case de Exception coloca evenso na DLT. Com oum monitoramento adequado, podemos ver quando esse erros acontecessem (Tópic Lag subindo da DLT) e tomar ações para mitigar o impacto no usuário final.
